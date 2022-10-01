@@ -1,49 +1,44 @@
 import PropTypes from 'prop-types';
 import css from './SearchBar.module.css';
-import { Component } from 'react';
+import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
-export class SearchBar extends Component {
-    state = {
-        query: "",
-    }
+export const SearchBar = ({onSubmit}) => {
+    const [query, setQuery] = useState("");
 
-    handleNameChange = event => {
-        this.setState({query: event.currentTarget.value.toLowerCase()})
+    const handleNameChange = event => {
+        setQuery(event.currentTarget.value.toLowerCase())
     }
 
     
-    handleSubmit = event => {
+    const handleSubmit = event => {
         event.preventDefault();
-        if(this.state.query.trim() === "") {
+        if(query.trim() === "") {
             alert("Введите запрос")
             return; 
         }
-        this.props.onSubmit(this.state.query);
-        // this.setState({ query: '' })
+        onSubmit(query);
     };
 
-    render() {
         return(
             <header className={css.Searchbar}>
-                <form className={css.SearchForm} onSubmit={this.handleSubmit}>
+                <form className={css.SearchForm} onSubmit={handleSubmit}>
                     <button type="submit" className={css.SearchFormButton}>
                         <FaSearch size='26' />
                     </button>
                     <input
-                        onChange={this.handleNameChange}
+                        onChange={handleNameChange}
                         className={css.SearchFormInput}
                         type="text"
                         autoComplete="off"
                         autoFocus
                         placeholder="Search images and photos"
-                        value={this.state.query} 
+                        value={query} 
                     />
                 </form>
             </header>
         );
-    }
-};
+}
 
 SearchBar.propTypes = {
     onSubmit: PropTypes.func.isRequired,

@@ -3,62 +3,68 @@ import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Button } from "./Button/Button";
 import { Loader } from "./Loader/Loader";
 import { Modal } from "./Modal/Modal";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import * as API from '../services/API';
-export class App extends Component {
-  state = {
-    query: "",
-    dataImages: [],
-    isLoading: false,
-    page: 1,
-    total: null,
-    largeImage: null,
-  };
 
-  async componentDidUpdate(prevProps, prevState) {
-    if(prevState.query !== this.state.query || prevState.page !== this.state.page)
-    try {    
-        this.setState({isLoading: true});
-        const data = await API.fetchData(this.state.query, this.state.page);
+export const App = () => {
+
+  const [query, setQuery] = useState("");
+  const [dataImages, setDataImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(null);
+  const [largeImage, setLargeImage] = useState(null);
+  
+
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
+    async function fethData(){
+      try {    
+        setIsLoading(true);
+        const data = await API.fetchData(query, page);
         if(data.totalHits === 0) {
           alert("There is no matches");
-          this.setState({isLoading: false});
+          setIsLoading(false);
           return;
         }
         setTimeout(() => {
-          this.setState(state => ({dataImages: [...state.dataImages, ...data.hits], isLoading:false, total: data.totalHits}));
+          setDataImages(prevDataImages => [...prevDataImages, ...data.hits]);
+          setIsLoading(false);
+          setTotal(data.totalHits);
         }, 1000);
+        }
+        catch(error) {
+          console.log(error);
+          setIsLoading(false);
+        }
+    }
+    fethData();
+  }, [query, page])
 
-      }
-      catch(error) {
-        console.log(error => ({ error, isLoading: false }));
-      }
-  };
-
-  handleformSubmit = newQuery => {
-    if(this.state.query === newQuery) {
+  const handleformSubmit = newQuery => {
+    if(query === newQuery) {
       return; 
     }
-    this.setState({query: newQuery, dataImages: [], page: 1});
+    setQuery(newQuery);
+    setDataImages([]);
+    setPage(1);
     window.scrollTo({ top: 0, left: 0 });
   };
 
-  loadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const loadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  toggleModal = () => {
-    this.setState({largeImage: null})
-  };
-
-  onLargeImage = newOnLargeImage => {
-    this.setState({ largeImage: newOnLargeImage });
+  const toggleModal = () => {
+    setLargeImage(null);
   };
   
-  render() {
-    const { dataImages, total, largeImage} = this.state;
+  const onLargeImage = newOnLargeImage => {
+    setLargeImage(newOnLargeImage);
+  };
+
     return (
       <div 
         style={{
@@ -71,16 +77,23 @@ export class App extends Component {
           paddingBottom: 24,
         }}
       >
-        <SearchBar onSubmit={this.handleformSubmit}/>
+        <SearchBar onSubmit={handleformSubmit}/>
         {dataImages.length > 0 && (
         <>
-          <ImageGallery dataImages={dataImages} onLargeImage={this.onLargeImage}/>
-          {dataImages.length < total ? (<Button onClick={this.loadMore}/>) : ("")}
+          <ImageGallery dataImages={dataImages} onLargeImage={onLargeImage}/>
+          {dataImages.length < total ? (<Button onClick={loadMore}/>) : ("")}
         </>
         )}
-        {this.state.isLoading && <Loader/>}
-        {largeImage && (<Modal onClose={this.toggleModal} largeImage={largeImage}/>)}
+        {isLoading && <Loader/>}
+        {largeImage && (<Modal onClose={toggleModal} largeImageAndTags={largeImage}/>)}
       </div>
     );
-  }
 };
+
+
+
+
+
+  
+
+  

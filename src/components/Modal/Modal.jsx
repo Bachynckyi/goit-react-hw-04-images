@@ -26,17 +26,19 @@ export class Modal extends Component  {
             <div className={css.Modal}>
             <img 
               className={css.largeImage}
-              src={this.props.largeImage.largeURL} 
-              alt={this.props.largeImage.alt} />
+              src={this.props.largeImageAndTags.largeURL} 
+              alt={this.props.largeImageAndTags.tags} />
             </div>
         </div>
       )};
 };
 
 Modal.propTypes = {
-  largeImage: PropTypes.shape({
-    largeUrl: PropTypes.string.isRequired,
-    alt: PropTypes.string.isRequired,
-  }).isRequired,
-  onModalClose: PropTypes.func.isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      largeURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    })
+  ),
+  onClose: PropTypes.func.isRequired,
 };
