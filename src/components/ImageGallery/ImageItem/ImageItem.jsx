@@ -19,4 +19,5 @@ ImageItem.propTypes = {
     smallURL: PropTypes.string.isRequired,
     alt: PropTypes.string.isRequired,
     largeURL: PropTypes.string.isRequired,
+    onLargeImage: PropTypes.func.isRequired,
   };
