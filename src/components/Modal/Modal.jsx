@@ -29,7 +29,8 @@ export const Modal = ({onClose, largeImageAndTags}) => {
             <img 
               className={css.largeImage}
               src={largeImageAndTags.largeURL} 
-              alt={largeImageAndTags.tags} />
+              alt={largeImageAndTags.alt} 
+            />
             </div>
         </div>
     )
